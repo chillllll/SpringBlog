@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--Mybatis sql문 매핑파일 -->
+
+
+<mapper namespace="PostDAO">
+
+	<resultMap id="postResult" type="blog">
+		<id property="num" column="NUM" />
+		<result property="categoty" column="CATEGORY"/>
+		<result property="title" column="TITLE" />
+		<result property="regid" column="REGID" />
+		<result property="content" column="CONTENT" />
+		<result property="tag" column="TAG"/>
+		<result property="regDt" column="REGDT" />
+		<result property="editDt" column="EDITDT" />
+		<result property="viewcnt" column="VIEWCNT" />
+	</resultMap>
+
+	<!-- SQL문 -->
+	<!-- 글리스트 -->
+	<select id="getPostList" resultType="blog">
+		SELECT num,category,title,tag,viewcnt,regid,regdt,editdt
+		FROM post
+	</select>
+	
+	<!-- 글내용 -->
+	<select id="getPost" resultType="blog" parameterType="blog">
+		SELECT num,category,title,content,tag,viewcnt,regid,regdt,editdt
+		FROM post
+		WHERE NUM=#{num}
+	</select>
+	<!-- 글쓰기 -->
+	<insert id="insertPost" parameterType="blog">
+		INSERT INTO post(num,category,title,content,tag,viewcnt,regid,regdt,editdt)
+		VALUES((SELECT IFNULL(MAX(num), 0) + 1 FROM post),#{category},#{title},#{content},#{tag},0,#{regid},now(),now())
+	</insert>
+	<!-- 글수정 -->
+	<update id="updatePost" parameterType="blog">
+		UPDATE post
+		SET
+		category=#{category}, title=#{title}, content=#{content}, tag=#{tag}, editdt=now()
+		WHERE
+		NUM = #{num}
+	</update>
+	<!-- 글삭제 -->
+	<delete id="deletePost" parameterType="int">
+		DELETE FROM post WHERE
+		NUM = #{num}
+	</delete>
+	<!-- 조회수 증가 -->
+	<update id="updateViewCnt" parameterType="blog">
+		UPDATE post
+		SET
+		viewcnt = viewcnt + 1
+		WHERE
+		NUM = #{num}
+	</update>
+
+
+</mapper>
